@@ -39,16 +39,36 @@ job_skills (205,778 rows)
 | Python / pandas | Data cleaning and loading |
 | SQL | All analysis — window functions, CTEs, joins |
 
+## 📦 Data Setup
+
+The raw CSVs aren't included in this repo (too large for GitHub). To get them:
+
+1. Download the dataset from Kaggle: [LinkedIn Job Postings](https://www.kaggle.com/datasets/arshkon/linkedin-job-postings)
+2. From the download, you'll need:
+   - `postings.csv` (main table)
+   - `job_skills.csv` (from the skills folder)
+   - `skills.csv` (from the skills folder)
+   - `companies.csv` (from the companies folder)
+3. `postings.csv` is large (500MB+) with 31 columns — trim it down to just what this project uses:
+   ```python
+   import pandas as pd
+
+   cols = ['job_id', 'title', 'location', 'company_id',
+           'max_salary', 'min_salary', 'med_salary', 'pay_period', 'views']
+   df = pd.read_csv('postings.csv', usecols=cols)
+   df.to_csv('postings_trimmed.csv', index=False)
+   ```
+4. Place `companies.csv`, `skills.csv`, `postings_trimmed.csv`, and `job_skills.csv` in the project folder alongside `load_data.py`.
+
 ## 🚀 How to Run
 
 ```bash
 git clone https://github.com/hullsbot/job-postings-sql-analytics
 cd job-postings-sql-analytics
 
-# The database is included pre-built (job_postings.db).
-# To rebuild from scratch instead:
+# After completing Data Setup above:
 pip install pandas
-python load_data.py   # requires companies.csv, skills.csv, postings_trimmed.csv, job_skills.csv
+python load_data.py   # builds job_postings.db from the CSVs
 
 # Run any analytical query
 sqlite3 job_postings.db < queries.sql
@@ -96,8 +116,10 @@ job-postings-sql-analytics/
 ├── schema.sql          # Table definitions + indexes
 ├── load_data.py        # Loads CSVs into SQLite, handles referential integrity
 ├── queries.sql          # 10 analytical queries (window functions, CTEs, self-joins)
-├── job_postings.db      # Pre-built SQLite database
 └── README.md
+
+Note: job_postings.db and the raw CSVs are not included (see Data Setup below) —
+run load_data.py after downloading the dataset to generate the database locally.
 ```
 
 ## 📚 Data Source
